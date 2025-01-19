@@ -1,1 +1,4 @@
-Hello world z lapka
+To do list:
+- dodawanie filmu poprzez wstawienie wezla
+- usuwanie pozycji poprzez usuwanie wezla - doczytac teorie
+- dodatkowo dodawanie filmu do kategorii ulubione i wysitlanie tej listy
