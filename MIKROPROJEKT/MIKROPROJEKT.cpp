@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <exception>
 #include <functional>
-#include <conio.h> 
+//#include <conio.h> 
 
 class Movie
 {
@@ -17,6 +17,7 @@ private:
 public:
     Movie(std::string title, std::string director, int release_year, double rating, std::string genre) 
         : title(title),director(director),release_year(release_year),rating(rating),genre(genre){}
+    Movie(std::string title, std::string director) : title(title), director(director){}
 
     bool operator <(const Movie& other_movie)
     {
@@ -37,8 +38,8 @@ public:
     std::string getTitleUpper() const 
     { 
         std::string temp = title;
-        for (size_t i = 0; i < title.size(); i++)        
-            temp[i] = std::toupper(title[i]);       
+        //for (size_t i = 0; i < title.size(); i++)        
+          //  temp[i] = std::toupper(title[i]);       
         return temp;
     }
 
@@ -88,6 +89,39 @@ private:
             add_node(current->right, value);
         else
         {}
+    }
+    Node<T>* delete_node(Node<T>*current, const T& value)
+    {
+        if(current == nullptr)
+        return current;
+        
+        if(value< current->data)
+            current->left = delete_node(current->left.get(),value);    
+        else if(value>current->data)
+            current->right = delete_node(current->right.get(),value);
+
+        // zmatchowalismy value z wezlem, tera dokonujemy operacji usuniecia
+        // jezeli lewe dziecko to null ptr, to ustawiamy nasza wartosc na wartosc prawego dziecka
+
+        if(current->left == nullptr)
+        {
+            Node<T>* temp = current->right.get();
+            current = nullptr;
+            return temp;
+        }
+        else if(current->right == nullptr)
+        {
+            Node<T>* temp = current->left.get();
+            current = nullptr;
+            return temp;
+        }
+        else
+        {
+        
+        }
+
+
+
     }
 
     Node<T>* find_node(Node<T>* current, const T& value) const
@@ -351,6 +385,12 @@ private:
         }
         file.close();
     }
+
+    void save_to_file(const std::string file_name)
+    {
+        std::ifstream file(file_name);       
+
+    }
 public:
     ~FileReader(){}
     static FileReader& getInstance(const std::string& file_name)
@@ -381,7 +421,7 @@ public:
         if (count == 0)
             std::cout << "No matches found!" << std::endl;
     }
-    void find_movie() const
+    /*void find_movie() const
     {
         std::string input;
         char ch;
@@ -403,7 +443,7 @@ public:
                 search_title(input);
             }
         }
-    }
+    }*/
     void print_ascending() const
     {
         movies.print_ascending();
@@ -420,7 +460,7 @@ public:
     void menu()
     {
         std::string number;
-        std::cout << "Choose an action:\n [1] Sort movies A-Z \n [2] Sort movies Z-A \n [3] Search movie by title \n [4] End session \n Choose a number from 1 to 4: ";
+        std::cout << "Choose an action:\n [1] Sort movies A-Z \n [2] Sort movies Z-A \n [3] Search movie by title \n [4] Add a movie \n [5] Delete a movie [6] End session \n Choose a number from 1 to 4: ";
         std::cin >> number;
 
         while (number != "1" && number != "2" && number != "3" && number != "4" && number != "5")
@@ -433,23 +473,33 @@ public:
         {
         case '1':
         {
-            system("cls");
+            //system("cls");
             print_ascending();
             break;
         }
         case '2':
         {
-            system("cls");
+            //system("cls");
             print_descending();
             break;
         }
         case '3':
         {
-            system("cls");
-            find_movie();
+            //system("cls");
+            //find_movie();
             break;
         }
         case '4':
+        {
+            std::string title, director;
+            std::cout<<"Type movie title : "; std::cin>>title;
+            std::cout<<"\nType director : "; std::cin>>director;
+            movies.add(Movie(title, director));
+            std::cout<<"Successfully added a movie " << title <<" by "<< director <<" to the library!"<<std::endl;
+            print_ascending();
+
+        }
+        case '5':
         {
             end_session();
         }
