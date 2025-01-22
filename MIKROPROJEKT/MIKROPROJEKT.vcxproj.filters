@@ -18,5 +18,8 @@
     <ClCompile Include="MIKROPROJEKT.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
+    <ClCompile Include="Lista_stara_wersja.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

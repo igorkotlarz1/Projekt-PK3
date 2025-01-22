@@ -1,10 +1,14 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\igor\\source\\repos\\MIKROPROJEKT\\",
+  "WorkspaceRootPath": "C:\\Users\\igor\\Desktop\\Projekt-PK3\\MIKROPROJEKT\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{73F28B32-AE56-4E47-BF44-88E191E6D450}|MIKROPROJEKT.vcxproj|C:\\Users\\igor\\source\\repos\\MIKROPROJEKT\\MIKROPROJEKT.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{73F28B32-AE56-4E47-BF44-88E191E6D450}|MIKROPROJEKT.vcxproj|C:\\Users\\igor\\Desktop\\Projekt-PK3\\MIKROPROJEKT\\MIKROPROJEKT.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{73F28B32-AE56-4E47-BF44-88E191E6D450}|MIKROPROJEKT.vcxproj|solutionrelative:MIKROPROJEKT.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{73F28B32-AE56-4E47-BF44-88E191E6D450}|MIKROPROJEKT.vcxproj|C:\\Users\\igor\\Desktop\\Projekt-PK3\\MIKROPROJEKT\\Lista_stara_wersja.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{73F28B32-AE56-4E47-BF44-88E191E6D450}|MIKROPROJEKT.vcxproj|solutionrelative:Lista_stara_wersja.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\include\\xutility||{3B902123-F8A7-4915-9F01-361F908088D0}"
@@ -17,11 +21,24 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "Lista_stara_wersja.cpp",
+              "DocumentMoniker": "C:\\Users\\igor\\Desktop\\Projekt-PK3\\MIKROPROJEKT\\Lista_stara_wersja.cpp",
+              "RelativeDocumentMoniker": "Lista_stara_wersja.cpp",
+              "ToolTip": "C:\\Users\\igor\\Desktop\\Projekt-PK3\\MIKROPROJEKT\\Lista_stara_wersja.cpp",
+              "RelativeToolTip": "Lista_stara_wersja.cpp",
+              "ViewState": "AQIAAIIAAAAAAAAAAAAuwI8AAAACAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-01-22T22:17:52.512Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "xutility",
               "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\include\\xutility",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\include\\xutility",
@@ -35,11 +52,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "MIKROPROJEKT.cpp",
-              "DocumentMoniker": "C:\\Users\\igor\\source\\repos\\MIKROPROJEKT\\MIKROPROJEKT.cpp",
+              "DocumentMoniker": "C:\\Users\\igor\\Desktop\\Projekt-PK3\\MIKROPROJEKT\\MIKROPROJEKT.cpp",
               "RelativeDocumentMoniker": "MIKROPROJEKT.cpp",
-              "ToolTip": "C:\\Users\\igor\\source\\repos\\MIKROPROJEKT\\MIKROPROJEKT.cpp",
+              "ToolTip": "C:\\Users\\igor\\Desktop\\Projekt-PK3\\MIKROPROJEKT\\MIKROPROJEKT.cpp",
               "RelativeToolTip": "MIKROPROJEKT.cpp",
-              "ViewState": "AQIAAGMBAAAAAAAAAAAAAAgAAAATAAAA",
+              "ViewState": "AQIAAFEAAAAAAAAAAAAewGIAAAAgAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-12-22T15:35:40.421Z",
               "EditorCaption": ""
