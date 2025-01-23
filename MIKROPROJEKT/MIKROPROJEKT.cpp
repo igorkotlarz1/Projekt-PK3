@@ -17,18 +17,18 @@ private:
 public:
     Movie(std::string title, std::string director, int release_year, double rating, std::string genre) 
         : title(title),director(director),release_year(release_year),rating(rating),genre(genre){}
-    Movie(std::string title, std::string director) : title(title), director(director){}
-    Movie(std::string title): title(title){}
+    Movie(std::string title, std::string director) : title(title), director(director) { release_year = 6969; rating = 6.9; genre = "Action"; }
+    Movie(std::string title) : title(title) { director = "Ligma"; release_year = 2000; rating = 6.9; genre = "Action"; }
 
-    bool operator <(const Movie& other_movie)
+    bool operator <(const Movie& other_movie) const
     {
         return title < other_movie.title;
     }
-    bool operator >(const Movie& other_movie)
+    bool operator >(const Movie& other_movie) const
     {
         return title > other_movie.title;
     }
-    bool operator ==(const Movie& other_movie)
+    bool operator ==(const Movie& other_movie) const
     {
         return title == other_movie.title;
     }   
@@ -36,6 +36,10 @@ public:
 
     std::string getGenre() const { return genre; }
     std::string getTitle() const { return title; }
+    std::string getDirector() const{ return director; }
+    double getRating() const { return rating; }
+    int getYear() const { return release_year; }
+
     std::string getTitleUpper() const 
     { 
         std::string temp = title;
@@ -88,36 +92,36 @@ private:
             add_node(current->left, value);
         else if (value > current->data)
             add_node(current->right, value);
-        else
-        {}
     }
-    Node<T>* delete_node(std::unique_ptr<Node<T>>& current, T& value)
+    std::unique_ptr<Node<T>> delete_node(std::unique_ptr<Node<T>>& current, T& value) //Node<T>*
     {
         if(!current)
             return current;
         
         if(value< current->data)
-            delete_node(current->left,value);    
+            current-> left = std::move(delete_node(current->left,value));    
         else if(value>current->data)
-            delete_node(current->right,value);
+            current->right = std::move(delete_node(current->right,value));
         else
         {
-            if (!current->left) //wezel nie ma lewego dziecka
-                return current.release();//std::move(current->right);
+            if (!current->left && !current->right)
+                return nullptr;
+            else if (!current->left) //wezel nie ma lewego dziecka
+                return std::move(current->right);//return current.release();
             else if (!current->right) //wezel nie ma prawego dziecka
-                return current.release();//std::move(current->left);
+                return std::move(current->left); //return current.release();
             else //wezel ma oby dwoje dzieci
             {
                 //Szukamy najmniejszego potomka w prawym poddrzewie metoda pomocnicza
-                Node<T>* successor = find_min(current->right);
+                Node<T>* successor = find_min(current->right.get());
                 current->data = successor->data;
 
-                delete_node(current->right, successor->data);
+                current->right = std::move(delete_node(current->right, successor->data));
             }
         }
-       return current.get();     
+        return std::move(current); // current.get();
     }
-    Node<T>* find_min(const std::unique_ptr<Node<T>>& current) const
+    Node<T>* find_min(Node<T>* current) const
     {
         if (!current || !current->left)
             return current.get();
@@ -160,18 +164,18 @@ private:
 public:
     BinaryTree() : root(nullptr) {}
 
-    void add(T value)
+    void add(const T& value)
     {
         add_node(root, std::move(value));
     }
     void delete_(T& value)
     {
-        delete_node(root, value);
+        root = delete_node(root, value);
     }
 
     Node<T>* find(const T& value) const
     {
-        return find(root.get(), value);
+        return find_node(root.get(), value);
     }
     void in_order(const std::function<void(const T&)>& function) const
     {
@@ -206,13 +210,14 @@ bool validate_data(const std::string& title, const std::string& director,
 class FileReader
 {
 private:
-    FileReader(const std::string& file_name) { read_from_file(file_name); }
+    const std::string file_name;
+    FileReader(const std::string& file_name):file_name(file_name){ read_from_file(); }//file_name
     FileReader(const FileReader&) = delete;
     FileReader operator=(const FileReader&) = delete;
 
     BinaryTree<Movie> movies, favourites;
 
-    void read_from_file(const std::string& file_name)
+    void read_from_file()//const std::string& file_name
     {
         std::ifstream file(file_name);
         std::string line,title,director,release_year,rating,genre,seasons;
@@ -228,7 +233,7 @@ private:
             std::getline(ss, release_year, ',');
             std::getline(ss, rating, ',');
             std::getline(ss, genre, ',');
-            std::getline(ss, seasons);
+            //std::getline(ss, seasons);
 
             try
             {
@@ -246,9 +251,21 @@ private:
         file.close();
     }
 
-    void save_to_file(const std::string file_name)
+    void save_to_file()//const std::string file_name
     {
-        std::ifstream file(file_name);       
+        std::ofstream file(file_name);       
+        if (!file)
+            throw std::runtime_error("Unable to open file " + file_name + " !");
+        
+        movies.in_order([&file](const Movie& movie)
+            {
+                file << movie.getTitle() << ','
+                    << movie.getDirector() << ','
+                    << movie.getYear() << ','
+                    << movie.getRating() << ','
+                    << movie.getGenre() << '\n';
+            });
+        file.close();
     }
 public:
     ~FileReader(){}
@@ -318,7 +335,7 @@ public:
     void end_session()
     {
         std::cout << "Thank you for using our services. We hope to se you again soon..." << std::endl;
-        //zapisywanie itd
+        save_to_file();
     }
     void menu()
     {
@@ -356,12 +373,13 @@ public:
         {
             std::string title, director;
             std::cout<<"Type movie's title : "; std::cin>>title;
-            std::cout<<"\nType director : "; std::cin>>director;
+            std::cout<<"Type director : "; std::cin>>director;
 
             add_movie(Movie(title, director));
-
             std::cout<<"Successfully added a movie " << title <<" by "<< director <<" to the library!"<<std::endl;
             print_ascending();
+            end_session();
+            break;
         }
         case '5':
         {
@@ -369,9 +387,10 @@ public:
             std::cout << "Find movie you want to delete by title : "; std::cin >> title;
 
             Movie temp_movie(title);
-            movies.delete_(temp_movie);
+           // movies.delete_(temp_movie);
             std::cout << "Successfully deleted "<< temp_movie<<std::endl;
             print_ascending();
+            break;
         }
         case '6':
         {

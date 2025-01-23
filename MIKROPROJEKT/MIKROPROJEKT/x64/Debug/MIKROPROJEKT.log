@@ -1,23 +1,2 @@
 ﻿  MIKROPROJEKT.cpp
-C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\MIKROPROJEKT.cpp(97,20): error C2440: "return": nie można konwertować z "std::unique_ptr<Node<T>,std::default_delete<Node<T>>>" na "Node<T> *"
-C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\MIKROPROJEKT.cpp(97,20): error C2440:         with
-C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\MIKROPROJEKT.cpp(97,20): error C2440:         [
-C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\MIKROPROJEKT.cpp(97,20): error C2440:             T=Movie
-C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\MIKROPROJEKT.cpp(97,20): error C2440:         ]
-  C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\MIKROPROJEKT.cpp(97,20):
-  Nie jest dostępny żaden operator konwersji zdefiniowany przez użytkownika, który mógłby wykonać tę konwersję lub operator nie może zostać wywołany
-  C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\MIKROPROJEKT.cpp(97,20):
-  kontekst tworzenia wystąpienia szablonu (najpierw najstarszy) to
-  	C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\MIKROPROJEKT.cpp(213,23):
-  	zobacz odwołanie do kompilowanego tworzenia wystąpienia „BinaryTree<Movie>” klasy klasa szablon
-  	C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\MIKROPROJEKT.cpp(94,14):
-  	podczas kompilowania funkcji składowej „Node<T> *BinaryTree<T>::delete_node(std::unique_ptr<Node<T>,std::default_delete<Node<T>>> &,T &)” klasy klasa szablon
-          with
-          [
-              T=Movie
-          ]
-  		C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\MIKROPROJEKT.cpp(169,20):
-  		zobacz pierwsze odwołanie do elementu „BinaryTree<Movie>::delete_node” w „BinaryTree<Movie>::delete_”
-  		C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\MIKROPROJEKT.cpp(372,27):
-  		zobacz pierwsze odwołanie do elementu „BinaryTree<Movie>::delete_” w „FileReader::menu”
-  
+  MIKROPROJEKT.vcxproj -> C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\x64\Debug\MIKROPROJEKT.exe
