@@ -9,6 +9,8 @@
 #include <map>
 #include <vector>
 #include <conio.h> 
+#include <windows.h>
+#include <limits>
 
 class Movie
 {
@@ -19,7 +21,7 @@ private:
 public:
     Movie(std::string title, std::string director, int release_year, double rating, std::string genre) 
         : title(title),director(director),release_year(release_year),rating(rating),genre(genre){}
-    Movie(std::string title, std::string director) : title(title), director(director) { release_year = 6969; rating = 6.9; genre = "Action"; }
+    Movie(std::string title, std::string director, std::string genre) : title(title), director(director), genre(genre) { release_year = 6969; rating = 6.9;}
     Movie(std::string title) : title(title) { director = "Ligma"; release_year = 2000; rating = 6.9; genre = "Action"; }
 
     bool operator <(const Movie& other_movie) const
@@ -120,7 +122,7 @@ private:
                 current->right = delete_node(std::move(current->right), successor->data);
             }
         }
-        return current; // current.get();
+        return current; 
     }
     Node<T>* find_min(Node<T>* current) 
     {
@@ -172,6 +174,9 @@ public:
     void delete_(const T& value)
     {
         root = delete_node(std::move(root), value);
+        /*if (root)// == nullptr
+            return false;
+        return true;*/
     }
 
     Node<T>* find(const T& value) const
@@ -278,13 +283,41 @@ public:
     }
     BinaryTree<Movie>& getData() { return movies; }
 
-    void add_movie(const Movie& movie)
+    void add_movie() //const Movie& movie
     {
-        movies.add(movie);
-    }
-    void delete_movie()
-    {
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::string title, director, genre;
+        std::cout << "Type movie's title : "; std::getline(std::cin, title);
+        std::cout << "Type director : "; std::getline(std::cin, director);
+        std::cout << "Type movie's genre : "; std::getline(std::cin, genre);
 
+       movies.add(Movie(title, director, genre));
+       std::cout << "Successfully added a movie " << title << " by " << director << " to the library!" << std::endl;
+        //movies.add(movie);
+    }
+    void delete_movie() //const Movie& temp_movie
+    {       
+        std::string title;
+        while (true)
+        {
+            std::cout << "Find a movie you want to delete by title : "; std::getline(std::cin, title);
+            if (title == "\b")
+                break;
+            Movie temp_movie(title);            
+            if (movies.find(temp_movie))
+            {
+                movies.delete_(temp_movie);
+                std::cout << "Succesfully deleted " << temp_movie <<" from the library!"<< std::endl;
+                break;
+            }
+            else
+                std::cout << "Failed to find a movie titled " << temp_movie << "! Try again" << std::endl;
+
+            /*if (movies.delete_(temp_movie))
+                std::cout << "Succesfully deleted" << temp_movie << std::endl;
+            else
+                std::cout << "Failed to find a movie titled " << temp_movie << "!" << std::endl;*/
+        }
     }
     void search_title(const std::string& prefix) const
     {
@@ -348,9 +381,10 @@ public:
     {
         std::map<std::string, BinaryTree<Movie>> genre_groups = groupby_genre();
 
+        std::cout << std::endl;
         for (const auto& pair : genre_groups)
         {
-            std::cout<< pair.first << ": "<< std::endl; //genre
+            std::cout<< pair.first << ": " << std::endl;        //genre
             pair.second.in_order([](const Movie& movie)         //binary tree
                 {
                     std::cout << "  - " << movie.getTitle() << std::endl;
@@ -362,65 +396,87 @@ public:
         std::cout << "Thank you for using our services. We hope to se you again soon..." << std::endl;
         save_to_file();
     }
+    void menu_return()
+    {
+        std::string action;
+        Sleep(500);
+        std::cout << "\nPress [0] to return to the main menu, press [1] to end this session : "; std::cin >> action;
+        while (action != "0" && action != "1")
+        {
+            std::cout << "Unknown action. Try again: "; std::cin >> action;
+        }
+        if (action[0] == '0')
+        {
+            std::cout << "Returning to the main menu..."; Sleep(1000);
+            system("cls");
+            menu();
+        }
+        else
+            end_session();
+    }
     void menu()
     {
-        std::string number;
+        std::string action;
         std::cout << "Choose an action:\n[1] Sort movies A-Z \n[2] Sort movies Z-A \n"
-            <<"[3] Search movie by title \n[4] Add a movie \n[5] Delete a movie \n[6]Group movies by genres \n[7] End session"
-            <<" \n Choose a number from 1 to 4: ";
-        std::cin >> number;
+            <<"[3] Search movie by title \n[4] Add a movie \n[5] Delete a movie \n[6] Group movies by genres \n[7] End session"
+            <<" \nChoose an action from 1 to 7: ";
+        std::cin >> action;
 
-        while (number != "1" && number != "2" && number != "3" && number != "4" && number != "5" && number != "6" && number != "7")
+        while (action != "1" && action != "2" && action != "3" && action != "4" && action != "5" && action != "6" && action != "7")
         {
-            std::cout << "Unknown action. Try again: "; std::cin >> number;
+            std::cout << "Unknown action. Try again: "; std::cin >> action;
         }
         //while()
-        switch (number[0])
+        switch (action[0])
         {
         case '1':
         {
             system("cls");
             print_ascending();
+            menu_return();
             break;
         }
         case '2':
         {
             system("cls");
             print_descending();
+            menu_return();
             break;
         }
         case '3':
         {
             system("cls");
             find_movie();
+            menu_return();
             break;
         }
         case '4':
         {
-            std::string title, director;
-            std::cout<<"Type movie's title : "; std::cin>>title;
-            std::cout<<"Type director : "; std::cin>>director;
+            /*std::string title, director, genre;
+            std::cout<<"Type movie's title : "; std::getline(std::cin, title);
+            std::cout<<"Type director : "; std::getline(std::cin, director);
+            std::cout << "Type movie's genre : "; std::getline(std::cin, genre);
 
-            add_movie(Movie(title, director));
-            std::cout<<"Successfully added a movie " << title <<" by "<< director <<" to the library!"<<std::endl;
-            print_ascending();
-            end_session();
+            add_movie(Movie(title, director, genre));
+            std::cout<<"Successfully added a movie " << title <<" by "<< director <<" to the library!"<<std::endl;*/
+            add_movie();
+            menu_return();
             break;
         }
         case '5':
         {
-            std::string title;
-            std::cout << "Find movie you want to delete by title : "; std::cin >> title;
-
+            /*std::string title;
+            std::cout << "Find a movie you want to delete by title : "; std::cin >> title;
             Movie temp_movie(title);
-            movies.delete_(temp_movie);
-            std::cout << "Successfully deleted "<< temp_movie<<std::endl;
-            print_ascending();
+            delete_movie(temp_movie);*/
+            delete_movie();
+            menu_return();
             break;
         }
         case '6':
         {
             print_groupedby_genre();
+            menu_return();
             break;
         }
         case '7':
