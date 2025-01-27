@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <exception>
 #include <functional>
+#include <map>
+#include <vector>
 #include <conio.h> 
 
 class Movie
@@ -93,39 +95,38 @@ private:
         else if (value > current->data)
             add_node(current->right, value);
     }
-    std::unique_ptr<Node<T>> delete_node(std::unique_ptr<Node<T>>& current, T& value) //Node<T>*
+    std::unique_ptr<Node<T>> delete_node(std::unique_ptr<Node<T>> current, const T& value) //Node<T>*
     {
         if(!current)
-            return current;
+            return nullptr;
         
         if(value< current->data)
-            current-> left = std::move(delete_node(current->left,value));    
+            current-> left = delete_node(std::move(current->left),value);    
         else if(value>current->data)
-            current->right = std::move(delete_node(current->right,value));
+            current->right = delete_node(std::move(current->right), value);
         else
         {
             if (!current->left && !current->right)
                 return nullptr;
             else if (!current->left) //wezel nie ma lewego dziecka
-                return std::move(current->right);//return current.release();
+                return std::move(current->right);
             else if (!current->right) //wezel nie ma prawego dziecka
-                return std::move(current->left); //return current.release();
+                return std::move(current->left);
             else //wezel ma oby dwoje dzieci
             {
                 //Szukamy najmniejszego potomka w prawym poddrzewie metoda pomocnicza
                 Node<T>* successor = find_min(current->right.get());
                 current->data = successor->data;
-
-                current->right = std::move(delete_node(current->right, successor->data));
+                current->right = delete_node(std::move(current->right), successor->data);
             }
         }
-        return std::move(current); // current.get();
+        return current; // current.get();
     }
-    Node<T>* find_min(Node<T>* current) const
+    Node<T>* find_min(Node<T>* current) 
     {
-        if (!current || !current->left)
-            return current.get();
-        return find_min(current->left);
+        while (current->left)
+            current = current->left.get();
+        return current;
     }
 
     Node<T>* find_node(Node<T>* current, const T& value) const
@@ -168,9 +169,9 @@ public:
     {
         add_node(root, std::move(value));
     }
-    void delete_(T& value)
+    void delete_(const T& value)
     {
-        root = delete_node(root, value);
+        root = delete_node(std::move(root), value);
     }
 
     Node<T>* find(const T& value) const
@@ -267,6 +268,7 @@ private:
             });
         file.close();
     }
+
 public:
     ~FileReader(){}
     static FileReader& getInstance(const std::string& file_name)
@@ -332,6 +334,29 @@ public:
     {
         movies.print_descending();
     }
+
+    std::map<std::string,BinaryTree<Movie>> groupby_genre() 
+    {
+        std::map<std::string, BinaryTree<Movie>> genre_groups;
+        movies.in_order([&genre_groups](const Movie& movie)
+            {
+                genre_groups[movie.getGenre()].add(movie);
+            });
+        return genre_groups;
+    }
+    void print_groupedby_genre()
+    {
+        std::map<std::string, BinaryTree<Movie>> genre_groups = groupby_genre();
+
+        for (const auto& pair : genre_groups)
+        {
+            std::cout<< pair.first << ": "<< std::endl; //genre
+            pair.second.in_order([](const Movie& movie)         //binary tree
+                {
+                    std::cout << "  - " << movie.getTitle() << std::endl;
+                });
+        }
+    }
     void end_session()
     {
         std::cout << "Thank you for using our services. We hope to se you again soon..." << std::endl;
@@ -340,14 +365,15 @@ public:
     void menu()
     {
         std::string number;
-        std::cout << "Choose an action:\n [1] Sort movies A-Z \n [2] Sort movies Z-A \n [3] Search movie by title \n [4] Add a movie \n [5] Delete a movie [6] End session \n Choose a number from 1 to 4: ";
+        std::cout << "Choose an action:\n[1] Sort movies A-Z \n[2] Sort movies Z-A \n"
+            <<"[3] Search movie by title \n[4] Add a movie \n[5] Delete a movie \n[6]Group movies by genres \n[7] End session"
+            <<" \n Choose a number from 1 to 4: ";
         std::cin >> number;
 
-        while (number != "1" && number != "2" && number != "3" && number != "4" && number != "5")
+        while (number != "1" && number != "2" && number != "3" && number != "4" && number != "5" && number != "6" && number != "7")
         {
             std::cout << "Unknown action. Try again: "; std::cin >> number;
         }
-
         //while()
         switch (number[0])
         {
@@ -387,12 +413,17 @@ public:
             std::cout << "Find movie you want to delete by title : "; std::cin >> title;
 
             Movie temp_movie(title);
-           // movies.delete_(temp_movie);
+            movies.delete_(temp_movie);
             std::cout << "Successfully deleted "<< temp_movie<<std::endl;
             print_ascending();
             break;
         }
         case '6':
+        {
+            print_groupedby_genre();
+            break;
+        }
+        case '7':
         {
             end_session();
         }
