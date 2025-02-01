@@ -1,7 +1,2 @@
 ﻿  MIKROPROJEKT.cpp
-C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\MIKROPROJEKT.cpp(288,63): warning C4003: zbyt mało argumentów wywołania makra podobnego do funkcji „max”
-C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\MIKROPROJEKT.cpp(288,63): error C2589: "(": niedozwolony token po prawej stronie "::"
-C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\MIKROPROJEKT.cpp(288,25): error C2144: błąd składniowy: „unknown-type” powinno być poprzedzone „)”
-C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\MIKROPROJEKT.cpp(288,25): error C2144: błąd składniowy: „unknown-type” powinno być poprzedzone „;”
-C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\MIKROPROJEKT.cpp(288,63): error C2059: błąd składniowy: „)”
-C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\MIKROPROJEKT.cpp(288,74): error C2059: błąd składniowy: „)”
+  MIKROPROJEKT.vcxproj -> C:\Users\igor\Desktop\Projekt-PK3\MIKROPROJEKT\x64\Debug\MIKROPROJEKT.exe
