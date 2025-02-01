@@ -477,10 +477,19 @@ public:
         std::string action_str;
         int action;
 
-        std::cout << "Choose an action:\n[1] Sort movies A-Z \n[2] Sort movies Z-A \n"
-            <<"[3] Search movie by title \n[4] Add a movie \n[5] Delete a movie \n"
-            <<"[6] Group movies by genres \n[7] Show the overall stats \n[8] End session"
-            <<" \nChoose an action from 1 to 8: ";
+        std::cout << "Choose an action:\n"
+            <<"[1] Sort movies by title A - Z\n"
+            <<"[2] Sort movies Z - A \n"
+            <<"[3] Search movie by title \n"
+            <<"[4] Add a movie \n"
+            <<"[5] Delete a movie \n"
+            //<<"[5] Add to favourites\n"
+            //<<"[5] Delete from favourites \n"
+            <<"[6] Group movies by genres \n"
+            <<"[7] Group movies by directors \n"
+            <<"[8] Show the overall stats \n"
+            <<"[9] End session\n"
+            <<"Choose an action from 1 to 8: ";
 
         while(true)
         {   std::cin >> action_str;
@@ -536,11 +545,17 @@ public:
         }
         case 7:
         {
-            overall_stats();
+            //print_groupedby_genre();
             menu_return();
             break;
         }
         case 8:
+        {
+            overall_stats();
+            menu_return();
+            break;
+        }
+        case 9:
         {
             end_session();
             break;
