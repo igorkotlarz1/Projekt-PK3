@@ -428,12 +428,17 @@ private:
     }
     void show_favourites() const
     {
+        if (favourites.is_empty())
+            std::cout << "There are no movies in your favourites list yet!" << std::endl;
+        else
+        { 
         std::cout << "Content of your favourites list:\n";
         favourites.in_order([](const Movie& movie)
             {
                 std::cout << " - ";
                 movie.print_info();
             });
+        }
     }
 
     std::map<std::string,BinaryTree<Movie>> groupby_genre_or_director(bool genre) 
