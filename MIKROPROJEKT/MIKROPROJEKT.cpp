@@ -23,6 +23,7 @@ public:
     Movie(std::string title, std::string director, std::string genre, double rating) : title(title), director(director), genre(genre), rating(rating) { release_year = 2000;}
     Movie(std::string title) : title(title) { director = "A"; release_year = 2000; rating = 6.9; genre = "Action"; }
 
+    //Opearotry
     bool operator <(const Movie& other_movie) const
     {
         return title < other_movie.title;
@@ -37,12 +38,12 @@ public:
     }   
     friend std::ostream& operator<<(std::ostream& COUT, const Movie& movie);
 
+    //Gettery
     std::string getGenre() const { return genre; }
     std::string getTitle() const { return title; }
     std::string getDirector() const{ return director; }
     double getRating() const { return rating; }
     int getYear() const { return release_year; }
-
     std::string getTitleUpper() const 
     { 
         std::string temp = title;
@@ -51,15 +52,11 @@ public:
         return temp;
     }
 
-};
-class Serie : public Movie
-{
-private:
-    int seasons;
-public:
-    Serie(std::string title, std::string director, int release_year, double rating, std::string genre, int seasons)
-        : Movie(title,director,release_year,rating,genre), seasons(seasons){}
-        
+    void print_info() const
+    {
+        std::cout << title << " by " << director << ". Rating: " << rating<<"/10"<<std::endl;
+    }
+
 };
 
 std::ostream &operator<<(std::ostream& COUT, const Movie & movie)
@@ -88,6 +85,7 @@ private:
     std::unique_ptr<Node<T>> root;
     int counter;
 
+    //Dodawanie/usuwanie
     void add_node(std::unique_ptr<Node<T>>& current, const T& value)
     {
         if (!current)        
@@ -97,7 +95,6 @@ private:
         else if (value > current->data)
             add_node(current->right, value);       
     }
-
     std::unique_ptr<Node<T>> delete_node(std::unique_ptr<Node<T>> current, const T& value) //Node<T>*
     {
         if(!current)
@@ -132,6 +129,7 @@ private:
         return current;
     }
 
+    //Wyszukiwanie
     Node<T>* find_node(Node<T>* current, const T& value) const
     {
         if (!current || current->data == value)
@@ -142,6 +140,7 @@ private:
             return find_node(current->right.get(), value);
     }
 
+    //Przejscie po drzewie
     void in_order_func(const std::unique_ptr<Node<T>>& current, const std::function<void(const T&)>& function) const
     {
         if (!current) return;
@@ -187,6 +186,7 @@ public:
     //Konstruktor przenoszący
     BinaryTree(BinaryTree&& other) noexcept : root(std::move(other.root)){}
 
+    //Dodawanie/usuwanie
     void add(const T& value)
     {
         add_node(root, std::move(value));
@@ -198,10 +198,13 @@ public:
         counter--;
     }
 
+    //Wyszukiwanie
     Node<T>* find(const T& value) const
     {
         return find_node(root.get(), value);
     }
+
+    //Przejscie po drzewie
     void in_order(const std::function<void(const T&)>& function) const
     {
         in_order_func(root, function);
@@ -219,9 +222,18 @@ public:
     {
         in_order_traversal(root, ascending);
     }
+
+    //Pomocnicze
+    void copy_to_tree(const T& value, BinaryTree<T>& other_tree) const
+    {
+        Node<T>* node = find(value);
+        if (node)// != nullptr
+            other_tree.add(node->data);
+    }
     int getCounter() const { return counter; }
+    bool is_empty() const { return counter == 0; }
     //Operator przeniesienia
-    BinaryTree& operator=(const BinaryTree&& other) noexcept
+    BinaryTree& operator=(BinaryTree&& other) noexcept
     {
         if (this != &other)
         {
@@ -238,20 +250,25 @@ bool validate_data(const std::string& title, const std::string& director,
     return !(title.empty()|| director.empty() || genre.empty() ||year>2024||rating>10.0||rating<0.0);
 }
 
-class FileReader
+class MovieLibrary
 {
 private:
-    const std::string file_name;
-    FileReader(const std::string& file_name):file_name(file_name){ read_from_file(); }
-    FileReader(const FileReader&) = delete;
-    FileReader operator=(const FileReader&) = delete;
-
+    const std::string movies_file, fav_file;
     BinaryTree<Movie> movies, favourites;
 
-    void read_from_file()//const std::string& file_name
+    MovieLibrary(const std::string& movies_file, const std::string& fav_file): movies_file(movies_file),fav_file(fav_file) 
+    { 
+        read_from_file(movies_file, movies); 
+        read_from_file(fav_file, favourites);
+    }
+    MovieLibrary(const MovieLibrary&) = delete;
+    MovieLibrary operator=(const MovieLibrary&) = delete;  
+
+    //Zapis/odczyt z plikow
+    void read_from_file(const std::string& file_name, BinaryTree<Movie>& tree)
     {
         std::ifstream file(file_name);
-        std::string line,title,director,release_year,rating,genre,seasons;
+        std::string line,title,director,release_year,rating,genre;
 
         if (!file)
             throw(std::runtime_error("Unable to read from file" + file_name + "!"));
@@ -271,7 +288,7 @@ private:
                 double rat = std::stod(rating);
 
                 if (validate_data(title, director, year, rat, genre))
-                    movies.add(Movie(title, director, year, rat, genre));
+                    tree.add(Movie(title, director, year, rat, genre)); //movie.add
             }
             catch (const std::exception except)
             {
@@ -280,13 +297,16 @@ private:
         }
         file.close();
     }
-    void save_to_file()//const std::string file_name
+    void save_to_file(const std::string& file_name, BinaryTree<Movie>& tree)
     {
+        if (tree.is_empty())
+            return;
+
         std::ofstream file(file_name);       
         if (!file)
             throw std::runtime_error("Unable to open file " + file_name + " !");
         
-        movies.in_order([&file](const Movie& movie)
+        tree.in_order([&file](const Movie& movie) //movies.in_order
             {
                 file << movie.getTitle() << ','
                     << movie.getDirector() << ','
@@ -297,15 +317,7 @@ private:
         file.close();
     }
 
-public:
-    ~FileReader(){}
-    static FileReader& getInstance(const std::string& file_name)
-    {
-        static FileReader instance(file_name);
-        return instance;
-    }
-    BinaryTree<Movie>& getData() { return movies; }
-
+    //Funkcjonalnosci bazy
     void add_movie()
     {
         std::string title, director, genre, rating_str;
@@ -396,26 +408,61 @@ public:
         //movies.print_descending();
         movies.print(false);
     }
-
-    std::map<std::string,BinaryTree<Movie>> groupby_genre() 
+    void add_to_favourites()
     {
-        std::map<std::string, BinaryTree<Movie>> genre_groups;
-        movies.in_order([&genre_groups](const Movie& movie)
-            {
-                genre_groups[movie.getGenre()].add(movie);
-            });
-        return genre_groups;
-    }
-    void print_groupedby_genre()
-    {
-        std::map<std::string, BinaryTree<Movie>> genre_groups = groupby_genre();
-       
-        for (const auto& pair : genre_groups)
+        std::string title;
+        while (true)
         {
-            std::cout<< pair.first <<" ("<<pair.second.getCounter() << "): " << std::endl; //genre
-            pair.second.in_order([](const Movie& movie) //binary tree
+            std::cout << "Find a movie you want to save to favourites by title : "; std::getline(std::cin, title);
+            if (title == "back")
+                break;
+            Movie temp_movie(title);
+            if (movies.find(temp_movie))
+            {
+                movies.copy_to_tree(temp_movie, favourites);
+                std::cout << "Succesfully saved " << temp_movie << " to your favourites list!\n"<<std::endl;
+                show_favourites();
+                break;
+            }
+            else
+                std::cout << "Failed to find a movie titled " << temp_movie << "! Try again." << std::endl;
+        }
+    }
+    void show_favourites() const
+    {
+        std::cout << "Content of your favourites list:\n";
+        favourites.in_order([](const Movie& movie)
+            {
+                std::cout << " - ";
+                movie.print_info();
+            });
+    }
+
+    std::map<std::string,BinaryTree<Movie>> groupby_genre_or_director(bool genre) 
+    {   
+        //Legenda:
+        //true -> grouping by genre , false -> grouping by director
+
+        std::map<std::string, BinaryTree<Movie>> groups;
+        movies.in_order([&](const Movie& movie)
+            {
+                if(genre)
+                    groups[movie.getGenre()].add(movie);
+                else
+                    groups[movie.getDirector()].add(movie);
+            });
+        return groups;
+    }
+    void print_groupedby_genre(bool genre)
+    {
+        std::map<std::string, BinaryTree<Movie>> groupes = groupby_genre_or_director(genre);
+       
+        for (const auto& pair : groupes)
+        {
+            std::cout<< pair.first <<"("<<pair.second.getCounter() << "): " << std::endl; //genre or director
+            pair.second.in_order([](const Movie& movie)     //BinaryTree<Movies>
                 {
-                    std::cout << "  - " << movie.getTitle() << std::endl;
+                    std::cout << " - " << movie.getTitle() << std::endl;
                 });
         }
     }
@@ -449,10 +496,13 @@ public:
             << "Most popular genre: " << most_pop_genre->first << " (" << most_pop_genre->second << " movies) \n"
             << "Most popular director: " << most_pop_director->first << " (" << most_pop_director->second << " movies)" << std::endl;
     }
+
+    //Wyswietlanie menu, nawigacja
     void end_session()
     {
         std::cout << "Thank you for using our services. We hope to se you again soon..." << std::endl;
-        save_to_file();
+        save_to_file(movies_file, movies);
+        save_to_file(fav_file, favourites);
     }
     void menu_return()
     {
@@ -472,6 +522,15 @@ public:
         else
             end_session();
     }
+
+public:
+    ~MovieLibrary(){}
+    static MovieLibrary& getInstance(const std::string& movies_file, const std::string& fav_file)
+    {
+        static MovieLibrary instance(movies_file,fav_file);
+        return instance;
+    }     
+
     void menu()
     {
         std::string action_str;
@@ -487,9 +546,11 @@ public:
             //<<"[5] Delete from favourites \n"
             <<"[6] Group movies by genres \n"
             <<"[7] Group movies by directors \n"
-            <<"[8] Show the overall stats \n"
-            <<"[9] End session\n"
-            <<"Choose an action from 1 to 8: ";
+            <<"[8] Show the overall stats \n"           
+            <<"[9] Add a movie to favourites\n"
+            <<"[10] Show favourites list\n"
+            <<"[11] End session\n"
+            <<"Choose an action from 1 to 10: ";
 
         while(true)
         {   std::cin >> action_str;
@@ -508,74 +569,74 @@ public:
         {
             system("cls");
             print_ascending();  
-            menu_return();
             break;
         }
         case 2:
         {
             system("cls");
             print_descending();
-            menu_return();
             break;
         }
         case 3:
         {
             system("cls");
             find_movie();
-            menu_return();
             break;
         }
         case 4:
         {
             add_movie();
-            menu_return();
             break;
         }
         case 5:
         {
             delete_movie();
-            menu_return();
             break;
         }
         case 6:
         {
-            print_groupedby_genre();
-            menu_return();
+            print_groupedby_genre(true);
             break;
         }
         case 7:
         {
-            //print_groupedby_genre();
-            menu_return();
+            print_groupedby_genre(false);
             break;
         }
         case 8:
         {
             overall_stats();
-            menu_return();
             break;
         }
         case 9:
         {
-            end_session();
+            add_to_favourites();
             break;
         }
         case 10:
         {
-            std::cout << "TEST" << std::endl;
+            show_favourites();
+            break;
+        }
+        case 11:
+        {
+            end_session();
+            break;
         }
         default:
             break;
-        }        
+        }
+        if(action!=11)
+            menu_return();
     }
+    BinaryTree<Movie>& getData() { return movies; }  
 };
 
 int main()
 {
     try
     {
-        FileReader& file_reader = FileReader::getInstance("movies.txt");
-        
+        MovieLibrary& file_reader = MovieLibrary::getInstance("movies.txt","favs.txt");        
         file_reader.menu();       
     }
     catch (const std::exception& except)
