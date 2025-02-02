@@ -141,28 +141,6 @@ private:
     }
 
     //Przejscie po drzewie
-    void in_order_func(const std::unique_ptr<Node<T>>& current, const std::function<void(const T&)>& function) const
-    {
-        if (!current) return;
-        in_order_func(current->left,function);
-        function(current->data);
-        in_order_func(current->right,function);
-    }
-    /*
-    void in_order_ascending(const Node<T>* current) const
-    {
-        if (!current) return;
-        in_order_ascending(current->left.get());
-        std::cout << current->data << std::endl;
-        in_order_ascending(current->right.get());     
-    }
-    void in_order_descending(const Node<T>* current) const
-    {
-        if(!current) return;
-        in_order_descending(current->right.get());
-        std::cout << current->data << std::endl;
-        in_order_descending(current->left.get());       
-    }*/
     void in_order_traversal(const std::unique_ptr<Node<T>>& current, bool ascending = true) const
     {
         if (!current) 
@@ -180,11 +158,36 @@ private:
             in_order_traversal(current->left, ascending);
         }
     }
+    void in_order_func(const std::unique_ptr<Node<T>>& current, const std::function<void(const T&)>& function) const
+    {
+        if (!current) return;
+        in_order_func(current->left,function);
+        function(current->data);
+        in_order_func(current->right,function);
+    }  
+
+    //Pomocnicze
+    std::unique_ptr<Node<T>> copy_node(const std::unique_ptr<Node<T>>& current)
+    {
+        if (!current)
+            return nullptr;
+        std::unique_ptr<Node<T>> new_node = std::make_unique<Node<T>>(current->data);
+        new_node->left = copy_node(current->left);
+        new_node->right = copy_node(current->right);
+
+        return new_node;
+    }
 
 public:
     BinaryTree() : root(nullptr), counter(0) {}
     //Konstruktor przenoszący
     BinaryTree(BinaryTree&& other) noexcept : root(std::move(other.root)){}
+
+    //Konstruktor kopiujacy
+    BinaryTree(const BinaryTree& other) : counter(other.counter)
+    {
+        root = copy_node(other.root);
+    }
 
     //Dodawanie/usuwanie
     void add(const T& value)
@@ -209,21 +212,12 @@ public:
     {
         in_order_func(root, function);
     }
-    /*
-    void print_ascending() const
-    {
-        in_order_ascending(root.get());
-    }
-    void print_descending() const
-    {
-        in_order_descending(root.get());
-    }*/
     void print(bool ascending) const
     {
         in_order_traversal(root, ascending);
     }
 
-    //Pomocnicze
+    //Dodatkowe
     void copy_to_tree(const T& value, BinaryTree<T>& other_tree) const
     {
         Node<T>* node = find(value);
@@ -232,6 +226,7 @@ public:
     }
     int getCounter() const { return counter; }
     bool is_empty() const { return counter == 0; }
+
     //Operator przeniesienia
     BinaryTree& operator=(BinaryTree&& other) noexcept
     {
@@ -322,7 +317,10 @@ private:
     {
         std::string title, director, genre, rating_str;
         double rating;
+        std::cout << "Add a movie to the library by entering the vital data below (press Tab to leave)"<<std::endl;
         std::cout << "Enter movie's title : "; std::getline(std::cin, title);
+        if (title == "\t")
+            return;
         std::cout << "Enter director : "; std::getline(std::cin, director);
         std::cout << "Enter movie's genre : "; std::getline(std::cin, genre);
         std::cout << "Enter movie's rating : ";
@@ -344,8 +342,8 @@ private:
         std::string title;
         while (true)
         {
-            std::cout << "Find a movie you want to delete by title : "; std::getline(std::cin, title);
-            if (title == "back")
+            std::cout << "Find a movie you want to delete by title (press Tab to leave): "; std::getline(std::cin, title);
+            if (title == "\t")
                 break;
             Movie temp_movie(title);            
             if (movies.find(temp_movie))
@@ -413,9 +411,9 @@ private:
         std::string title;
         while (true)
         {
-            std::cout << "Find a movie you want to save to favourites by title : "; std::getline(std::cin, title);
-            if (title == "back")
-                break;
+            std::cout << "Find a movie you want to save to favourites by title (press Tab to leave): "; std::getline(std::cin, title);
+            if (title == "\t")
+                return;
             Movie temp_movie(title);
             if (movies.find(temp_movie))
             {
@@ -453,7 +451,7 @@ private:
             });
         return groups;
     }
-    void print_groupedby_genre(bool genre)
+    void print_groupedby_genre_or_director(bool genre)
     {
         std::map<std::string, BinaryTree<Movie>> groupes = groupby_genre_or_director(genre);
        
@@ -506,21 +504,28 @@ private:
     }
     void menu_return()
     {
-        std::string action;
-        Sleep(500);
-        std::cout << "\nPress [0] to return to the main menu, press [1] to end this session : "; std::cin >> action;
-        while (action != "0" && action != "1")
+        std::string action_str;
+        int action;
+        Sleep(1000);
+
+        std::cout << "\nPress [0] to return to the main menu, press [1] to end this session : ";
+        while (true)
         {
-            std::cout << "Unknown action. Try again: "; std::cin >> action;
+            std::cin >> action_str;
+            std::stringstream sos(action_str);
+            if (sos >> action && (action == 0 || action == 1))
+                break;
+            else
+                std::cout << "Unknown action. Try again: ";
         }
-        if (action[0] == '0')
+        if (action == 0)
         {
             std::cout << "Returning to the main menu..."; Sleep(1000);
             system("cls");
             menu();
         }
         else
-            end_session();
+            end_session();       
     }
 
 public:
@@ -542,15 +547,13 @@ public:
             <<"[3] Search movie by title \n"
             <<"[4] Add a movie \n"
             <<"[5] Delete a movie \n"
-            //<<"[5] Add to favourites\n"
-            //<<"[5] Delete from favourites \n"
             <<"[6] Group movies by genres \n"
             <<"[7] Group movies by directors \n"
             <<"[8] Show the overall stats \n"           
             <<"[9] Add a movie to favourites\n"
             <<"[10] Show favourites list\n"
             <<"[11] End session\n"
-            <<"Choose an action from 1 to 10: ";
+            <<"Choose an action between 1 and 11: ";
 
         while(true)
         {   std::cin >> action_str;
@@ -595,12 +598,12 @@ public:
         }
         case 6:
         {
-            print_groupedby_genre(true);
+            print_groupedby_genre_or_director(true);
             break;
         }
         case 7:
         {
-            print_groupedby_genre(false);
+            print_groupedby_genre_or_director(false);
             break;
         }
         case 8:
