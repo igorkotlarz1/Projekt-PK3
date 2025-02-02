@@ -563,7 +563,7 @@ public:
         while(true)
         {   std::cin >> action_str;
             std::stringstream sos(action_str);
-            if (sos >> action && action >= 1 && action <= 10)
+            if (sos >> action && action >= 1 && action <= 11)
                 break;
             else
                 std::cout << "Unknown action. Try again: ";    
