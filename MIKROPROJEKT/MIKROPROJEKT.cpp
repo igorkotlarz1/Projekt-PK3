@@ -10,7 +10,9 @@
 #include <map>
 #include <conio.h> 
 #include <windows.h>
+#include "Movie.h"
 
+/*
 class Movie
 {
 private:
@@ -62,11 +64,9 @@ public:
 std::ostream &operator<<(std::ostream& COUT, const Movie & movie)
 {
     COUT << movie.title;
-    /*, Director(s) : "<< movie.director <<", Year of release : "<< movie.release_year <<
-            ", Genre: "<< movie.genre <<", Rating(IMDB): "<< movie.rating<<"/10\n";*/
         return COUT;
 }
-
+*/
 template<typename T>
 class Node
 {
@@ -141,7 +141,7 @@ private:
     }
 
     //Przejscie po drzewie
-    void in_order_traversal(const std::unique_ptr<Node<T>>& current, bool ascending = true) const
+    void in_order_traversal(const std::unique_ptr<Node<T>>& current, bool ascending) const
     {
         if (!current) 
             return;

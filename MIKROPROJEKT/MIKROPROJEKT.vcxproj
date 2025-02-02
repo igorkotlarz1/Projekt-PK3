@@ -128,8 +128,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Lista_stara_wersja.cpp" />
     <ClCompile Include="MIKROPROJEKT.cpp" />
+    <ClCompile Include="Movie.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Movie.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
